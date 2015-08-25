@@ -135,18 +135,33 @@
 		</dependency>
 
 	</dependencies>
-	
+
 	<build>
 		<plugins>
 			<plugin>
-			  <groupId>org.apache.maven.plugins</groupId>
-			  <artifactId>maven-compiler-plugin</artifactId>
-			  <version>2.1</version>
-			  <configuration>
-			    <source>${jdk.version}</source>
-			    <target>${jdk.version}</target>
-			    <compilerArgument>-proc:none</compilerArgument>
-			  </configuration>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.1</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+					<compilerArgument>-proc:none</compilerArgument>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.ning.maven.plugins</groupId>
+				<artifactId>maven-duplicate-finder-plugin</artifactId>
+				<configuration>
+					<failBuildInCaseOfConflict>false</failBuildInCaseOfConflict>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
