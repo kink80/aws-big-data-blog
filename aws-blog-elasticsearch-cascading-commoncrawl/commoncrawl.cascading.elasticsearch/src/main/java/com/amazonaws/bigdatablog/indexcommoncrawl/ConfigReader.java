@@ -10,15 +10,20 @@ import java.util.Properties;
 public class ConfigReader {
 
     public Properties renderProperties(Object caller) throws IOException {
-        Properties properties = new Properties();
         String propFileName = "config.properties";
         InputStream inputStream = getClass().getClassLoader().getResourceAsStream(propFileName);
+        
+        return renderProperties(caller, inputStream);
+    }
+    
+    public Properties renderProperties(Object caller, InputStream propStream) throws IOException {
+        Properties properties = new Properties();
 
-        if (inputStream != null) {
-            properties.load(inputStream);
+        if (propStream != null) {
+            properties.load(propStream);
             AppProps.setApplicationJarClass(properties, caller.getClass());
         } else {
-            throw new FileNotFoundException("property file '" + propFileName + "' not found in the classpath");
+            throw new FileNotFoundException("property file not found");
         }
 
         return properties;
