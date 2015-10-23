@@ -17,7 +17,7 @@ public class Main {
             System.out.println("Could not read your config.properties file");e.printStackTrace();
         }
 
-        FlowDef flowDef = CommonCrawlIndex.buildMultiFlowDef(properties);
+        FlowDef flowDef = CommonCrawlIndex.buildMultiFlowToElasticSearch(properties);
         new HadoopFlowConnector(properties).connect(flowDef).complete();
     }
 

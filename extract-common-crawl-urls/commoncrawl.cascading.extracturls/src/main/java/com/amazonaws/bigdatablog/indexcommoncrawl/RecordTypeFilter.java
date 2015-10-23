@@ -9,7 +9,13 @@ import cascading.operation.FilterCall;
 import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
 
-public class TestFilter extends BaseOperation implements Filter {
+public class RecordTypeFilter extends BaseOperation implements Filter {
+	
+	private final String recordType;
+	
+	public RecordTypeFilter(String recordType) {
+		this.recordType = recordType;
+	}
 
 	public boolean isRemove(FlowProcess flowProcess, FilterCall filterCall) {
 		TupleEntry entry = filterCall.getArguments();
@@ -19,10 +25,10 @@ public class TestFilter extends BaseOperation implements Filter {
 		Header h = record.getHeader();
 		String recType = h.getRecordType();
 		
-		if ("warcinfo".equals(recType)) {
-			return true;
+		if (recordType.equals(recType)) {
+			return false;
 		}
-		return false;
+		return true;
 	}
 
 }

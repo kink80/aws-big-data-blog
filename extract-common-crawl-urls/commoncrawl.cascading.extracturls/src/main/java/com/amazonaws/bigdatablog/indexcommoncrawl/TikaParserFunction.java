@@ -1,12 +1,13 @@
 package com.amazonaws.bigdatablog.indexcommoncrawl;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
-import org.codehaus.jackson.JsonGenerationException;
-import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
+
+import com.amazonaws.bigdatablog.indexcommoncrawl.parser.TikaParser;
+import com.amazonaws.bigdatablog.indexcommoncrawl.parser.ResponseParser;
 
 import cascading.flow.FlowProcess;
 import cascading.operation.BaseOperation;
@@ -16,18 +17,17 @@ import cascading.tuple.Fields;
 import cascading.tuple.Tuple;
 import cascading.tuple.TupleEntry;
 
-public class TestFunction extends BaseOperation<WARCRecord> implements Function<WARCRecord> {
+public class TikaParserFunction extends BaseOperation<WARCRecord> implements Function<WARCRecord> {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static Logger logger = Logger.getLogger(TestFunction.class);
+	private static Logger logger = Logger.getLogger(TikaParserFunction.class);
 	
-	public TestFunction() {
+	public TikaParserFunction() {
 		super(new Fields("json"));
 	}
 
 	public void operate(FlowProcess flowProcess, FunctionCall<WARCRecord> functionCall) {
-		// TODO Auto-generated method stub
 		logger.debug("Operating ...");
 		
 		TupleEntry entry = functionCall.getArguments();
@@ -35,11 +35,19 @@ public class TestFunction extends BaseOperation<WARCRecord> implements Function<
 		WARCRecord record = (WARCRecord) tuple.getObject(0);
 		
 		String uri = record.getHeader().getTargetURI();
+		
 		String content = null;
 		try {
-			content = new String(record.getContent(), "UTF-8");
-		} catch (UnsupportedEncodingException e) {
-			// TODO Auto-generated catch block
+			ResponseParser conn = new ResponseParser(record.getContent());
+			HttpResponse resp = conn.receiveResponseWithEntity();
+			
+			HttpEntity entity = resp.getEntity();
+			
+		    if ( entity != null ) {
+	    		content = TikaParser.parse(entity.getContent());
+	    	}
+		    
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -52,17 +60,9 @@ public class TestFunction extends BaseOperation<WARCRecord> implements Function<
 			
 			Tuple result = new Tuple(serialized);
 			functionCall.getOutputCollector().add( result );
-		} catch (JsonGenerationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JsonMappingException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
 	}
 	
 }

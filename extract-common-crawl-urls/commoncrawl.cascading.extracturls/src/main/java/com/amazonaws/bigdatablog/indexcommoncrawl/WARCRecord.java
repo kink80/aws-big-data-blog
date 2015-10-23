@@ -90,6 +90,8 @@ public class WARCRecord {
             byte b = in.readByte();
             if (!seenCR && b == 13) {
                 seenCR = true;
+            } else if (!seenCR && b == 10) {
+                seenCRLF = true;
             } else if (seenCR && b == 10) {
                 seenCRLF = true;
             } else {

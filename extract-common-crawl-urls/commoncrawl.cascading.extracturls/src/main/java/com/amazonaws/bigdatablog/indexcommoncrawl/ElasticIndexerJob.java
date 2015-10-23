@@ -8,13 +8,14 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Properties;
 
-public class HadoopJob {
+public class ElasticIndexerJob {
+	
     public static void main(String args[]) {
         Properties properties = null;
         
         if ( args != null && args.length > 0 ) {
         	try {
-				properties = new ConfigReader().renderProperties(HadoopJob.class, new FileInputStream(args[0]));
+				properties = new ConfigReader().renderProperties(ElasticIndexerJob.class, new FileInputStream(args[0]));
 			} catch (FileNotFoundException e) {
 				System.out.println("Could not read your config.properties file");e.printStackTrace();
 			} catch (IOException e) {
@@ -24,9 +25,13 @@ public class HadoopJob {
         	if (args[1] != null && args[1].length() > 1){
                 properties.put("inPath", args[1]);
             }
+        	
+        	if (args[2] != null && args[2].length() > 1){
+                properties.put("outPath", args[2]);
+            }
         }
 
-        FlowDef flowDef = CommonCrawlIndex.buildMultiFlowDef(properties);
+        FlowDef flowDef = CommonCrawlIndex.buildMultiFlowToElasticSearch(properties);
         new HadoopFlowConnector(properties).connect(flowDef).complete();
     }
 
