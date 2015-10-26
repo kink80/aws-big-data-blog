@@ -162,6 +162,8 @@ public class CommonCrawlIndex {
         Pipe parsePipe = new Pipe( "exportCommonCrawlWETPipe" );
         
         parsePipe = new Each( parsePipe, new RecordTypeFilter("response"));
+        parsePipe = new Each( parsePipe, new Warc2EntityFunction());
+        parsePipe = new Each( parsePipe, new ContentRichFilter());
         parsePipe = new Each( parsePipe, new TikaParserFunction());
 
         // connect the taps, pipes, etc., into a flow

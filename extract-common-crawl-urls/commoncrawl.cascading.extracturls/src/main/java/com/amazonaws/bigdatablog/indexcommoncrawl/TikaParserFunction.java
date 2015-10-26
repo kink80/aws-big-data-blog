@@ -1,13 +1,11 @@
 package com.amazonaws.bigdatablog.indexcommoncrawl;
 
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
 import org.apache.log4j.Logger;
+import org.apache.tools.ant.filters.StringInputStream;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.amazonaws.bigdatablog.indexcommoncrawl.parser.TikaParser;
-import com.amazonaws.bigdatablog.indexcommoncrawl.parser.ResponseParser;
 
 import cascading.flow.FlowProcess;
 import cascading.operation.BaseOperation;
@@ -21,48 +19,47 @@ public class TikaParserFunction extends BaseOperation<WARCRecord> implements Fun
 	
 	private static final long serialVersionUID = 1L;
 	
-	private static Logger logger = Logger.getLogger(TikaParserFunction.class);
+	private static Logger LOGGER = Logger.getLogger(TikaParserFunction.class);
 	
 	public TikaParserFunction() {
 		super(new Fields("json"));
 	}
 
 	public void operate(FlowProcess flowProcess, FunctionCall<WARCRecord> functionCall) {
-		logger.debug("Operating ...");
-		
 		TupleEntry entry = functionCall.getArguments();
 		Tuple tuple = entry.getTuple();
-		WARCRecord record = (WARCRecord) tuple.getObject(0);
-		
-		String uri = record.getHeader().getTargetURI();
+		UrlEntity record = (UrlEntity) tuple.getObject(0);
 		
 		String content = null;
 		try {
-			ResponseParser conn = new ResponseParser(record.getContent());
-			HttpResponse resp = conn.receiveResponseWithEntity();
 			
-			HttpEntity entity = resp.getEntity();
-			
-		    if ( entity != null ) {
-	    		content = TikaParser.parse(entity.getContent());
-	    	}
-		    
+			try {
+				content = TikaParser.parse(new StringInputStream(record.getContent()));
+				content = content.replaceAll("[ ]+", " ").
+						replaceAll("\n+", "\n").
+						replaceAll("\t+", "\t").
+						replaceAll("[\n\t]+", "\n\t").
+						replaceAll("[\n\t ]+", "\n\t ");
+				
+				UrlContent data = new UrlContent(record.getUri(), content);
+				ObjectMapper mapper = new ObjectMapper();
+				
+				String serialized = mapper.writeValueAsString(data);
+					
+				Tuple result = new Tuple(serialized);
+				functionCall.getOutputCollector().add( result );
+				
+			} catch (Exception e) {
+				if ( record.getContent() != null ) {
+	    			LOGGER.error( record.getContent() );
+	    		}
+				
+				throw e;
+			}
 		} catch (Exception e) {
-			e.printStackTrace();
+			LOGGER.error("Document parsing failed with the following error: ", e);
 		}
 
-		TestData data = new TestData(uri, content);
-		ObjectMapper mapper = new ObjectMapper();
-		
-		String serialized;
-		try {
-			serialized = mapper.writeValueAsString(data);
-			
-			Tuple result = new Tuple(serialized);
-			functionCall.getOutputCollector().add( result );
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 	}
 	
 }

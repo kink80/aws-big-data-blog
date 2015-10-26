@@ -11,14 +11,10 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpMessage;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
-import org.apache.http.config.MessageConstraints;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.entity.ContentLengthStrategy;
 import org.apache.http.impl.entity.LaxContentLengthStrategy;
-import org.apache.http.impl.io.ChunkedInputStream;
-import org.apache.http.impl.io.ContentLengthInputStream;
 import org.apache.http.impl.io.DefaultHttpResponseParser;
-import org.apache.http.impl.io.EmptyInputStream;
 import org.apache.http.impl.io.HttpTransportMetricsImpl;
 import org.apache.http.impl.io.IdentityInputStream;
 import org.apache.http.impl.io.SessionInputBufferImpl;
@@ -29,7 +25,6 @@ public class ResponseParser {
 	
 	private byte[] content;
 	private ContentLengthStrategy incomingStrategy = LaxContentLengthStrategy.INSTANCE;
-	private MessageConstraints messageConstraints = MessageConstraints.DEFAULT;
 	private SessionInputBufferImpl inbuffer = new SessionInputBufferImpl(new HttpTransportMetricsImpl(), 8 * 1024);
 	
 	
@@ -70,15 +65,7 @@ public class ResponseParser {
 	protected InputStream createInputStream(
             final long len,
             final SessionInputBuffer inbuffer) {
-        if (len == ContentLengthStrategy.CHUNKED) {
-            return new ChunkedInputStream(inbuffer, this.messageConstraints);
-        } else if (len == ContentLengthStrategy.IDENTITY) {
-            return new IdentityInputStream(inbuffer);
-        } else if (len == 0L) {
-            return EmptyInputStream.INSTANCE;
-        } else {
-            return new ContentLengthInputStream(inbuffer, len);
-        }
+		return new IdentityInputStream(inbuffer);
     }
 	
 	protected HttpEntity prepareInput(final HttpMessage message) throws HttpException {

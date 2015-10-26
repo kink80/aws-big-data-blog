@@ -1,11 +1,11 @@
 package com.amazonaws.bigdatablog.indexcommoncrawl;
 
-public class TestData {
+public class UrlContent {
 	
 	private String uri;
 	private String content;
 	
-	public TestData(String uri, String content) {
+	public UrlContent(String uri, String content) {
 		this.uri = uri;
 		this.content = content;
 	}

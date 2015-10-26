@@ -34,5 +34,5 @@ public class FlatFileIndexerJob {
         FlowDef flowDef = CommonCrawlIndex.buildMultiFlowToFlatFile(properties);
         new HadoopFlowConnector(properties).connect(flowDef).complete();
     }
-
+    
 }
