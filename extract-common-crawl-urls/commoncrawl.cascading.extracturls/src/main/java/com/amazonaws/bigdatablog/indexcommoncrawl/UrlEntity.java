@@ -3,10 +3,10 @@ package com.amazonaws.bigdatablog.indexcommoncrawl;
 public class UrlEntity {
 	
 	private String uri;
-	private String rawContent;
+	private byte[] rawContent;
 	private String contentType;
 	
-	public UrlEntity(String uri, String rawContent, String contentType) {
+	public UrlEntity(String uri, byte[] rawContent, String contentType) {
 		this.uri = uri;
 		this.rawContent = rawContent;
 		this.contentType = contentType;
@@ -20,11 +20,11 @@ public class UrlEntity {
 		this.uri = uri;
 	}
 	
-	public String getContent() {
+	public byte[] getContent() {
 		return rawContent;
 	}
 	
-	public void setContent(String content) {
+	public void setContent(byte[] content) {
 		this.rawContent = content;
 	}
 

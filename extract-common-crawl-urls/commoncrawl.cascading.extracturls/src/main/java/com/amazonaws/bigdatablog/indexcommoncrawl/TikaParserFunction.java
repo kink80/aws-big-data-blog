@@ -1,8 +1,9 @@
 package com.amazonaws.bigdatablog.indexcommoncrawl;
 
 
+import java.io.ByteArrayInputStream;
+
 import org.apache.log4j.Logger;
-import org.apache.tools.ant.filters.StringInputStream;
 import org.codehaus.jackson.map.ObjectMapper;
 
 import com.amazonaws.bigdatablog.indexcommoncrawl.parser.TikaParser;
@@ -34,7 +35,7 @@ public class TikaParserFunction extends BaseOperation<WARCRecord> implements Fun
 		try {
 			
 			try {
-				content = TikaParser.parse(new StringInputStream(record.getContent()));
+				content = TikaParser.parse(new ByteArrayInputStream(record.getContent()));
 				content = content.replaceAll("[ ]+", " ").
 						replaceAll("\n+", "\n").
 						replaceAll("\t+", "\t").

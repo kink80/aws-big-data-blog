@@ -26,9 +26,6 @@ public class ElasticIndexerJob {
                 properties.put("inPath", args[1]);
             }
         	
-        	if (args[2] != null && args[2].length() > 1){
-                properties.put("outPath", args[2]);
-            }
         }
 
         FlowDef flowDef = CommonCrawlIndex.buildMultiFlowToElasticSearch(properties);

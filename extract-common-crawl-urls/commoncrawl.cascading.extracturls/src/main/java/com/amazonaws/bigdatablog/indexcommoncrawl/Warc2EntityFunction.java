@@ -42,9 +42,9 @@ public class Warc2EntityFunction extends BaseOperation<HttpEntity> implements Fu
 			if ( entity != null) {
 				Header contentType = entity.getContentType();
 				if ( contentType != null ) {
-					String raw = "";
+					byte[] raw = new byte[] {};
 					try {
-						raw = IOUtils.toString(entity.getContent());
+						raw = IOUtils.toByteArray(entity.getContent());
 						
 						UrlEntity data = new UrlEntity(uri, raw, contentType.getValue());
 						
