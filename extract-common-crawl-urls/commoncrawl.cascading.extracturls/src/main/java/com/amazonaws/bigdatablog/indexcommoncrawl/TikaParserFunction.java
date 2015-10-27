@@ -36,11 +36,12 @@ public class TikaParserFunction extends BaseOperation<WARCRecord> implements Fun
 			
 			try {
 				content = TikaParser.parse(new ByteArrayInputStream(record.getContent()));
-				content = content.replaceAll("[ ]+", " ").
-						replaceAll("\n+", "\n").
+				content = content.replaceAll("\n+", "\n").
 						replaceAll("\t+", "\t").
 						replaceAll("[\n\t]+", "\n\t").
-						replaceAll("[\n\t ]+", "\n\t ");
+						replaceAll("[\n\t ]+", "\n\t ").
+						replaceAll("\n\t ", " ").
+						replaceAll("[ ]+", " ");
 				
 				UrlContent data = new UrlContent(record.getUri(), content);
 				ObjectMapper mapper = new ObjectMapper();
